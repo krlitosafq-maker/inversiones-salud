@@ -1,0 +1,435 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#0f6b5c">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="icono-192.png">
+<link rel="apple-touch-icon" href="icono-192.png">
+<title>Inversiones Salud</title>
+<style>
+:root{
+  --fondo:#f4f5f2; --panel:#ffffff; --borde:#dfe2da; --texto:#1c2420; --suave:#5d6a63;
+  --acento:#0f6b5c; --sobre-acento:#ffffff; --acento-suave:#dcefe9; --barra-fondo:#e6e9e2;
+  --alerta:#b4531a; --alerta-suave:#fbeadd;
+}
+@media (prefers-color-scheme: dark){
+  :root{
+    --fondo:#131715; --panel:#1b211e; --borde:#2d3632; --texto:#e7ece8; --suave:#9aa8a0;
+    --acento:#5cc4ae; --sobre-acento:#10201c; --acento-suave:#1d3a34; --barra-fondo:#2a322e;
+    --alerta:#f0a36b; --alerta-suave:#3a2a1e;
+  }
+}
+*{box-sizing:border-box}
+[hidden]{display:none !important}
+html,body{margin:0}
+body{background:var(--fondo);color:var(--texto);font:15px/1.4 system-ui,"Segoe UI",Roboto,sans-serif;
+  padding-bottom:calc(64px + env(safe-area-inset-bottom));-webkit-tap-highlight-color:transparent}
+button,select,input{font:inherit;color:inherit}
+header{position:sticky;top:0;z-index:5;background:var(--acento);color:var(--sobre-acento);
+  padding:calc(10px + env(safe-area-inset-top)) 16px 10px}
+header h1{font-size:17px;margin:0;font-weight:600}
+header .sub{font-size:12px;opacity:.85}
+main{padding:12px 16px;max-width:760px;margin:0 auto}
+nav{position:fixed;left:0;right:0;bottom:0;z-index:6;display:flex;background:var(--panel);
+  border-top:1px solid var(--borde);padding-bottom:env(safe-area-inset-bottom)}
+nav button{flex:1;border:0;background:none;padding:10px 4px 8px;color:var(--suave);font-size:12px;min-height:56px}
+nav button svg{display:block;margin:0 auto 2px;width:22px;height:22px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+nav button.activa{color:var(--acento);font-weight:600}
+.caja{background:var(--panel);border:1px solid var(--borde);border-radius:10px;padding:12px 14px;margin-bottom:12px}
+.caja h2{font-size:13px;margin:0 0 10px;font-weight:600}
+.kpis{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:12px}
+.kpi{background:var(--panel);border:1px solid var(--borde);border-radius:10px;padding:10px 12px;min-width:0}
+.kpi.ancho{grid-column:1 / -1}
+.kpi .t{color:var(--suave);font-size:12px}
+.kpi .v{font-size:19px;font-weight:600;font-variant-numeric:tabular-nums}
+.kpi .n{color:var(--suave);font-size:12px}
+.barra{height:8px;background:var(--barra-fondo);border-radius:4px;overflow:hidden}
+.barra i{display:block;height:100%;background:var(--acento);border-radius:4px}
+.fila-barra{display:block;width:100%;text-align:left;border:0;background:none;padding:7px 0;border-bottom:1px solid var(--borde)}
+.fila-barra:last-child{border-bottom:0}
+.fila-barra .arriba{display:flex;justify-content:space-between;gap:8px;font-size:13px;margin-bottom:4px}
+.fila-barra .arriba span:first-child{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.fila-barra .arriba span:last-child{color:var(--suave);font-variant-numeric:tabular-nums;white-space:nowrap}
+.alerta{display:flex;justify-content:space-between;gap:10px;align-items:center;width:100%;text-align:left;
+  border:1px solid var(--borde);background:var(--panel);border-radius:8px;padding:10px 12px;margin-bottom:6px;min-height:48px}
+.alerta b{color:var(--alerta);font-variant-numeric:tabular-nums;font-size:16px}
+.alerta small{color:var(--suave);display:block}
+.barra-filtros{display:flex;gap:8px;margin-bottom:10px}
+.barra-filtros input{flex:1;min-width:0;border:1px solid var(--borde);background:var(--panel);border-radius:8px;padding:10px 12px}
+.btn{border:1px solid var(--borde);background:var(--panel);border-radius:8px;padding:10px 14px;min-height:44px;white-space:nowrap}
+.btn.principal{background:var(--acento);border-color:var(--acento);color:var(--sobre-acento);font-weight:600}
+.btn.con-filtros{border-color:var(--acento);color:var(--acento);font-weight:600}
+.hoja{background:var(--panel);border:1px solid var(--borde);border-radius:10px;padding:12px;margin-bottom:10px;display:grid;gap:8px}
+.hoja select{width:100%;border:1px solid var(--borde);background:var(--fondo);border-radius:8px;padding:10px;min-height:44px}
+.hoja label{display:flex;align-items:center;gap:8px;min-height:36px}
+.hoja input[type=checkbox]{width:20px;height:20px;accent-color:var(--acento)}
+.conteo{display:flex;justify-content:space-between;align-items:center;gap:8px;color:var(--suave);font-size:13px;margin-bottom:8px}
+.conteo select{border:1px solid var(--borde);background:var(--panel);border-radius:8px;padding:6px 8px}
+.tarjeta{display:block;width:100%;text-align:left;background:var(--panel);border:1px solid var(--borde);border-radius:10px;
+  padding:12px 14px;margin-bottom:8px}
+.tarjeta .nombre{font-size:13.5px;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}
+.tarjeta .meta{color:var(--suave);font-size:12px;margin:4px 0 8px;overflow-wrap:anywhere}
+.tarjeta .cifras{display:flex;justify-content:space-between;gap:8px;font-size:12.5px;font-variant-numeric:tabular-nums;margin-bottom:5px}
+.tarjeta .cifras span b{font-weight:600}
+.chip{display:inline-block;border:1px solid var(--borde);border-radius:10px;padding:1px 8px;font-size:12px;margin:0 4px 4px 0;color:var(--suave)}
+.ficha{position:fixed;inset:0;z-index:10;background:var(--fondo);overflow-y:auto;
+  padding:0 16px calc(24px + env(safe-area-inset-bottom))}
+.ficha .cab{position:sticky;top:0;background:var(--fondo);padding:calc(10px + env(safe-area-inset-top)) 0 10px;z-index:1}
+.ficha h2.titulo{font-size:15px;margin:0 0 8px;line-height:1.3}
+.pares{display:grid;grid-template-columns:1fr 1fr;gap:8px 14px}
+.pares div{min-width:0}
+.pares div.ancho{grid-column:1 / -1}
+.pares span{display:block;color:var(--suave);font-size:12px}
+.pares b{font-weight:500;font-variant-numeric:tabular-nums;overflow-wrap:anywhere;font-size:14px}
+.meses{display:grid;grid-template-columns:repeat(12,1fr);gap:3px;align-items:end;height:80px}
+.meses div{background:var(--acento);border-radius:3px 3px 0 0;min-height:1px}
+.meses-n{display:grid;grid-template-columns:repeat(12,1fr);gap:3px;text-align:center;font-size:10px;color:var(--suave)}
+.nota{color:var(--suave);font-size:13px;white-space:pre-wrap;overflow-wrap:anywhere}
+.ejec{border-top:1px solid var(--borde);padding:8px 0}
+.ejec:first-of-type{border-top:0}
+.aviso{background:var(--alerta-suave);border:1px solid var(--alerta);border-radius:10px;padding:10px 14px;margin-bottom:12px}
+.centro{text-align:center;padding:50px 10px;color:var(--suave)}
+a{color:var(--acento)}
+</style>
+</head>
+<body>
+<header>
+  <h1>Inversiones · Salud</h1>
+  <div class="sub" id="estado">Cargando datos…</div>
+</header>
+<main>
+  <div id="aviso"></div>
+  <div id="cargando" class="centro">Cargando la información…</div>
+
+  <section id="panel" hidden>
+    <div id="filtroPanel"></div>
+    <div class="kpis" id="kpis"></div>
+    <div class="caja"><h2>Alertas</h2><div id="alertas"></div></div>
+    <div class="caja"><h2>Avance del devengado por nivel de gobierno</h2><div id="porNivel"></div></div>
+    <div class="caja"><h2>Por tipo de inversión</h2><div id="porTipo"></div></div>
+    <div class="caja"><h2>Por departamento</h2><div id="porDepto"></div></div>
+  </section>
+
+  <section id="lista" hidden>
+    <div class="barra-filtros">
+      <input type="search" id="q" placeholder="CUI, SNIP o nombre" enterkeyhint="search">
+      <button class="btn" id="btnFiltros">Filtros</button>
+    </div>
+    <div class="hoja" id="hoja" hidden>
+      <select id="nivel"><option value="">Nivel de gobierno</option></select>
+      <select id="depto"><option value="">Departamento</option></select>
+      <select id="tipo"><option value="">Tipo de inversión</option></select>
+      <select id="entidad"><option value="">Entidad</option></select>
+      <select id="alerta"><option value="">Alerta</option></select>
+      <label><input type="checkbox" id="pim"> Solo con PIM este año</label>
+      <label><input type="checkbox" id="pmi"> Solo registradas en el PMI</label>
+      <button class="btn" id="btnLimpiar">Quitar filtros</button>
+    </div>
+    <div class="conteo"><span id="conteo"></span>
+      <select id="orden" aria-label="Ordenar">
+        <option value="pim">Mayor PIM</option><option value="dev">Mayor devengado</option>
+        <option value="avance">Menor avance</option><option value="costo">Mayor costo</option>
+        <option value="saldo">Mayor saldo</option></select></div>
+    <div id="tarjetas"></div>
+    <button class="btn" id="mas" style="width:100%" hidden>Ver más</button>
+  </section>
+
+  <section id="ideas" hidden>
+    <div class="barra-filtros">
+      <input type="search" id="iq" placeholder="Código de idea, CUI o nombre" enterkeyhint="search">
+      <button class="btn" id="ibtnFiltros">Filtros</button>
+    </div>
+    <div class="hoja" id="ihoja" hidden>
+      <select id="inivel"><option value="">Nivel de gobierno</option></select>
+      <select id="idepto"><option value="">Departamento</option></select>
+      <select id="itipo"><option value="">Tipo de inversión</option></select>
+      <select id="iestado"><option value="">Estado</option></select>
+      <select id="ianio"><option value="">Año de ejecución</option></select>
+      <select id="icui"><option value="">Con o sin CUI</option><option value="sin">Sin CUI (aún no es inversión)</option>
+        <option value="con">Con CUI</option><option value="cartera">Con CUI en la cartera activa</option></select>
+      <button class="btn" id="ibtnLimpiar">Quitar filtros</button>
+    </div>
+    <div id="icargando" class="centro">Cargando las ideas…</div>
+    <div id="icuerpo" hidden>
+      <div class="kpis" id="ikpis"></div>
+      <div class="conteo"><span id="iconteo"></span>
+        <select id="iorden" aria-label="Ordenar"><option value="monto">Mayor monto</option>
+          <option value="fecha">Más recientes</option></select></div>
+      <div id="itarjetas"></div>
+      <button class="btn" id="imas" style="width:100%" hidden>Ver más</button>
+    </div>
+  </section>
+</main>
+
+<nav>
+  <button data-tab="panel" class="activa"><svg viewBox="0 0 24 24"><path d="M4 20V10M10 20V4M16 20v-7M22 20H2"/></svg>Panel</button>
+  <button data-tab="lista"><svg viewBox="0 0 24 24"><path d="M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01"/></svg>Inversiones</button>
+  <button data-tab="ideas"><svg viewBox="0 0 24 24"><path d="M9 18h6M10 21h4M12 3a6 6 0 0 0-4 10.5c.7.7 1 1.5 1 2.5h6c0-1 .3-1.800 1-2.500A6 6 0 0 0 12 3z"/></svg>Ideas</button>
+</nav>
+<div class="ficha" id="ficha" hidden></div>
+
+<script>
+const $ = id => document.getElementById(id);
+const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const soles = v => v == null || v === '' ? '—' : 'S/ ' + Math.round(v).toLocaleString('es-PE');
+const corto = v => { if (v == null) return '—'; const a = Math.abs(v);
+  return 'S/ ' + (a >= 1e9 ? (v/1e9).toFixed(2) + ' mil M' : a >= 1e6 ? (v/1e6).toFixed(1) + ' M' : Math.round(v).toLocaleString('es-PE')); };
+const pct = (a, b) => b > 0 ? ((a || 0) / b * 100).toFixed(1) + ' %' : '—';
+const num = v => (v || 0).toLocaleString('es-PE');
+const plano = s => String(s || '').toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '');
+const NIVELES = {GN: 'Gobierno Nacional', GR: 'Gobiernos Regionales', GL: 'Gobiernos Locales'};
+const POR_PAGINA = 40;
+let INV = [], IDEAS = null, F12B = null, EJEC = null, META = {}, anio = '', porClave = new Map(), cuis = new Set();
+let visibles = [], mostradas = 0, ivisibles = [], imostradas = 0, tab = 'panel';
+
+const umbral = () => (new Date().getMonth() + 1) / 12 * 0.5;
+const ALERTAS = {
+  sin_ejec: ['Con PIM y sin devengado', r => r.pim_anio_actual > 0 && !r.dev_anio_actual],
+  avance_bajo: [() => `Avance bajo para la fecha (menos de ${Math.round(umbral() * 100)} %)`,
+    r => r.pim_anio_actual > 0 && r.dev_anio_actual > 0 && r.dev_anio_actual / r.pim_anio_actual < umbral()],
+  pmi_sin_pim: ['Programada en el PMI del año y sin PIM', r => r.pmi_anio_1 > 0 && !r.pim_anio_actual],
+  sin_f12b: ['Con PIM y sin Formato 12-B', r => r.pim_anio_actual > 0 && r.tiene_f12b === 'NO'],
+  por_liquidar: ['Pendiente de liquidación', r => String(r.etapa_f9 || '').startsWith('Pendiente de liquidaci')],
+};
+const tituloAlerta = k => typeof ALERTAS[k][0] === 'function' ? ALERTAS[k][0]() : ALERTAS[k][0];
+
+async function traer(nombre) {
+  const r = await fetch('datos/' + nombre, {cache: 'no-cache'});
+  if (!r.ok) throw new Error('No se pudo cargar ' + nombre);
+  return r.json();
+}
+const objetos = t => t.filas.map(f => { const o = {}; t.cols.forEach((c, i) => o[c] = f[i]); return o; });
+function aviso(texto) { $('aviso').innerHTML = texto ? `<div class="aviso">${esc(texto)}</div>` : ''; }
+
+function filtrar() {
+  const q = plano($('q').value.trim()), f = {};
+  for (const id of ['nivel', 'depto', 'tipo', 'entidad', 'alerta']) f[id] = $(id).value;
+  const pim = $('pim').checked, pmi = $('pmi').checked, al = f.alerta && ALERTAS[f.alerta][1];
+  return INV.filter(r =>
+    (!q || r.clave === q || String(r.codigo_snip) === q || r._n.includes(q)) &&
+    (!f.nivel || r.nivel === f.nivel) && (!f.depto || r.departamento === f.depto) &&
+    (!f.tipo || r.tipo_inversion === f.tipo) && (!f.entidad || r.entidad === f.entidad) &&
+    (!pim || r.pim_anio_actual > 0) && (!pmi || r.registrado_pmi === 'SI') && (!al || al(r)));
+}
+function activos() {
+  return ['q', 'nivel', 'depto', 'tipo', 'entidad', 'alerta'].filter(id => $(id).value).length + $('pim').checked + $('pmi').checked;
+}
+function sumar(filas) {
+  const t = {n: filas.length, con_pim: 0, costo: 0, pia: 0, pim: 0, cert: 0, comp: 0, dev: 0};
+  for (const r of filas) { t.costo += r.costo_actualizado || 0; t.pia += r.pia_anio_actual || 0; t.pim += r.pim_anio_actual || 0;
+    t.cert += r.certif_anio_actual || 0; t.comp += r.comprom_anual_anio_actual || 0; t.dev += r.dev_anio_actual || 0;
+    if (r.pim_anio_actual > 0) t.con_pim++; }
+  return t;
+}
+function grupos(filas, campo) {
+  const m = new Map();
+  for (const r of filas) { const k = r[campo] || ''; let g = m.get(k);
+    if (!g) m.set(k, g = {nombre: k, pim: 0, dev: 0, n: 0});
+    g.pim += r.pim_anio_actual || 0; g.dev += r.dev_anio_actual || 0; if (r.pim_anio_actual > 0) g.n++; }
+  return [...m.values()].filter(g => g.pim > 0).sort((a, b) => b.pim - a.pim);
+}
+function barras(el, datos, nombre, filtro) {
+  el.innerHTML = datos.map(d => `<button class="fila-barra" ${d.nombre ? `data-filtro="${filtro}" data-valor="${esc(d.nombre)}"` : 'disabled'}>
+    <span class="arriba"><span>${esc(nombre(d))}</span><span>${pct(d.dev, d.pim)} · ${corto(d.pim).replace('S/ ', '')}</span></span>
+    <span class="barra"><i style="width:${Math.min(100, d.dev / d.pim * 100)}%"></i></span></button>`).join('')
+    || '<div class="nota">Sin inversiones con PIM en esta selección.</div>';
+}
+function pintarPanel() {
+  const t = sumar(visibles), n = activos();
+  $('filtroPanel').innerHTML = n ? `<div class="aviso">El panel muestra la selección filtrada (${num(t.n)} inversiones).
+    <a href="#" id="quitar">Quitar filtros</a></div>` : '';
+  const k = [['Inversiones', num(t.n), num(t.con_pim) + ' con PIM ' + anio], ['Costo actualizado', corto(t.costo), 'de la selección'],
+    ['PIA ' + anio, corto(t.pia), ''], ['PIM ' + anio, corto(t.pim), ''],
+    ['Certificado', corto(t.cert), pct(t.cert, t.pim) + ' del PIM'], ['Compromiso anual', corto(t.comp), pct(t.comp, t.pim) + ' del PIM']];
+  $('kpis').innerHTML = `<div class="kpi ancho"><div class="t">Devengado ${esc(anio)}</div><div class="v">${corto(t.dev)}</div>
+    <div class="n">${pct(t.dev, t.pim)} del PIM</div><div class="barra" style="margin-top:6px"><i style="width:${t.pim > 0 ? Math.min(100, t.dev / t.pim * 100) : 0}%"></i></div></div>`
+    + k.map(x => `<div class="kpi"><div class="t">${esc(x[0])}</div><div class="v">${esc(x[1])}</div><div class="n">${esc(x[2])}</div></div>`).join('');
+  $('alertas').innerHTML = Object.keys(ALERTAS).map(c => { const fs = visibles.filter(ALERTAS[c][1]);
+    return `<button class="alerta" data-alerta="${c}"><span>${esc(tituloAlerta(c))}<small>PIM comprometido: ${corto(fs.reduce((s, r) => s + (r.pim_anio_actual || 0), 0))}</small></span><b>${num(fs.length)}</b></button>`; }).join('');
+  barras($('porNivel'), grupos(visibles, 'nivel'), d => NIVELES[d.nombre] || d.nombre, 'nivel');
+  barras($('porTipo'), grupos(visibles, 'tipo_inversion'), d => d.nombre, 'tipo');
+  barras($('porDepto'), grupos(visibles, 'departamento'), d => d.nombre || 'Sin departamento', 'depto');
+}
+const avance = r => r.pim_anio_actual > 0 ? (r.dev_anio_actual || 0) / r.pim_anio_actual : Infinity;
+const ORDEN = {pim: (a, b) => (b.pim_anio_actual || 0) - (a.pim_anio_actual || 0), dev: (a, b) => (b.dev_anio_actual || 0) - (a.dev_anio_actual || 0),
+  costo: (a, b) => (b.costo_actualizado || 0) - (a.costo_actualizado || 0), saldo: (a, b) => (b.saldo_ejecutar || 0) - (a.saldo_ejecutar || 0),
+  avance: (a, b) => avance(a) - avance(b)};
+function tarjeta(r) {
+  const a = r.pim_anio_actual > 0 ? Math.min(100, (r.dev_anio_actual || 0) / r.pim_anio_actual * 100) : 0;
+  return `<button class="tarjeta" data-clave="${esc(r.clave)}"><div class="nombre">${esc(r.nombre_inversion)}</div>
+    <div class="meta">${esc(r.clave)} · ${esc(r.tipo_inversion)} · ${esc(r.entidad)} · ${esc(r.departamento)}</div>
+    <div class="cifras"><span>PIM <b>${corto(r.pim_anio_actual)}</b></span><span>Dev. <b>${corto(r.dev_anio_actual)}</b></span><span><b>${pct(r.dev_anio_actual, r.pim_anio_actual)}</b></span></div>
+    <div class="barra"><i style="width:${a}%"></i></div></button>`;
+}
+function pintarLista(reiniciar) {
+  if (reiniciar) { mostradas = 0; $('tarjetas').innerHTML = ''; }
+  const lote = visibles.slice(mostradas, mostradas + POR_PAGINA);
+  $('tarjetas').insertAdjacentHTML('beforeend', lote.map(tarjeta).join(''));
+  mostradas += lote.length;
+  $('conteo').textContent = num(visibles.length) + ' inversiones';
+  $('mas').hidden = mostradas >= visibles.length;
+  if (!visibles.length) $('tarjetas').innerHTML = '<div class="centro">No hay inversiones con esos filtros.</div>';
+  const n = activos() - ($('q').value ? 1 : 0);
+  $('btnFiltros').textContent = n ? `Filtros (${n})` : 'Filtros'; $('btnFiltros').classList.toggle('con-filtros', n > 0);
+}
+function refrescar() {
+  visibles = filtrar().sort(ORDEN[$('orden').value]);
+  pintarPanel(); pintarLista(true);
+}
+function limpiar() {
+  for (const id of ['q', 'nivel', 'depto', 'tipo', 'entidad', 'alerta']) $(id).value = '';
+  $('pim').checked = $('pmi').checked = false; refrescar();
+}
+
+/* ---------- Ideas ---------- */
+async function cargarIdeas() {
+  if (IDEAS) return;
+  IDEAS = objetos(await traer('ideas.json'));
+  for (const r of IDEAS) { r._n = plano(r.nombre); r._cartera = !!r.cod_unico && cuis.has(String(r.cod_unico)); }
+  const lista = c => [...new Set(IDEAS.map(r => r[c]).filter(v => v && v !== '0'))].sort();
+  llenar('inivel', lista('nivel'), x => NIVELES[x] || x); llenar('itipo', lista('tipo'));
+  llenar('iestado', lista('estado')); llenar('ianio', lista('anio'));
+  llenar('idepto', [...new Set(INV.map(r => r.departamento).filter(Boolean))].sort());
+  $('icargando').hidden = true; $('icuerpo').hidden = false;
+  refrescarIdeas();
+}
+function refrescarIdeas() {
+  if (!IDEAS) return;
+  const q = plano($('iq').value.trim()), f = {};
+  for (const id of ['inivel', 'idepto', 'itipo', 'iestado', 'ianio', 'icui']) f[id] = $(id).value;
+  ivisibles = IDEAS.filter(r =>
+    (!q || String(r.cod_idea) === q || String(r.cod_unico) === q || r._n.includes(q)) &&
+    (!f.inivel || r.nivel === f.inivel) && (!f.idepto || String(r.departamento).includes(f.idepto)) &&
+    (!f.itipo || r.tipo === f.itipo) && (!f.iestado || r.estado === f.iestado) && (!f.ianio || r.anio === f.ianio) &&
+    (!f.icui || (f.icui === 'sin' ? !r.cod_unico : f.icui === 'con' ? !!r.cod_unico : r._cartera)));
+  ivisibles.sort($('iorden').value === 'fecha' ? (a, b) => String(b.fecha_registro).localeCompare(String(a.fecha_registro))
+    : (a, b) => (b.monto_inversion || 0) - (a.monto_inversion || 0));
+  let activas = 0, conCui = 0, cartera = 0, pend = 0;
+  for (const r of ivisibles) { const act = r.estado === 'INVERSION ACTIVA'; if (act) activas++;
+    if (r.cod_unico) conCui++; else if (act) pend++; if (r._cartera) cartera++; }
+  const k = [['Ideas registradas', num(ivisibles.length), num(activas) + ' activas'], ['Ya tienen CUI', num(conCui), pct(conCui, ivisibles.length) + ' de las ideas'],
+    ['En la cartera activa', num(cartera), 'con ficha en esta app'], ['Activas sin CUI', num(pend), 'aún no son inversión']];
+  $('ikpis').innerHTML = k.map(x => `<div class="kpi"><div class="t">${esc(x[0])}</div><div class="v">${esc(x[1])}</div><div class="n">${esc(x[2])}</div></div>`).join('');
+  imostradas = 0; $('itarjetas').innerHTML = ''; pintarIdeas();
+  const n = ['inivel', 'idepto', 'itipo', 'iestado', 'ianio', 'icui'].filter(id => $(id).value).length;
+  $('ibtnFiltros').textContent = n ? `Filtros (${n})` : 'Filtros'; $('ibtnFiltros').classList.toggle('con-filtros', n > 0);
+}
+function pintarIdeas() {
+  const lote = ivisibles.slice(imostradas, imostradas + POR_PAGINA);
+  $('itarjetas').insertAdjacentHTML('beforeend', lote.map(r => `<div class="tarjeta"><div class="nombre">${esc(r.nombre)}</div>
+    <div class="meta">Idea ${esc(r.cod_idea)} · ${esc(r.tipo)} · ${esc(r.entidad)} · ${esc(r.departamento)}</div>
+    <div class="cifras"><span>Monto tentativo <b>${corto(r.monto_inversion)}</b></span><span>Año <b>${esc(r.anio === '0' ? '—' : r.anio)}</b></span></div>
+    <div class="meta" style="margin:0">${esc(r.estado === 'INVERSION ACTIVA' ? 'Activa' : 'Desactivada')} · registrada el ${esc(r.fecha_registro)} · ${
+      r.cod_unico ? (r._cartera ? `<a href="#" data-clave="${esc(r.cod_unico)}">CUI ${esc(r.cod_unico)}</a>`
+        : `<a target="_blank" rel="noopener" href="https://ofi5.mef.gob.pe/ssi/Ssi/Index?codigo=${encodeURIComponent(r.cod_unico)}&tipo=2">CUI ${esc(r.cod_unico)}</a>`) : 'sin CUI'}</div></div>`).join(''));
+  imostradas += lote.length;
+  $('iconteo').textContent = num(ivisibles.length) + ' ideas';
+  $('imas').hidden = imostradas >= ivisibles.length;
+  if (!ivisibles.length) $('itarjetas').innerHTML = '<div class="centro">No hay ideas con esos filtros.</div>';
+}
+
+/* ---------- Ficha ---------- */
+const par = (t, v, ancho) => `<div${ancho ? ' class="ancho"' : ''}><span>${esc(t)}</span><b>${esc(v == null || v === '' ? '—' : v)}</b></div>`;
+async function abrirFicha(clave) {
+  const i = porClave.get(String(clave)); if (!i) return;
+  if (!F12B) { try { [F12B, EJEC] = await Promise.all([traer('f12b.json'), traer('ejecucion.json')]); } catch (e) { F12B = F12B || {cols: [], filas: {}}; EJEC = EJEC || {filas: {}}; } }
+  const a = Number(anio) || 0, cui = String(i.codigo_unico || '');
+  const fila = F12B.filas[cui], f = fila ? Object.fromEntries(F12B.cols.map((c, n) => [c, fila[n]])) : null;
+  const meses = ['ene','feb','mar','abr','may','jun','jul','ago','set','oct','nov','dic'];
+  let h = `<div class="cab"><button class="btn" id="volver">← Volver</button></div>
+    <h2 class="titulo">${esc(i.nombre_inversion)}</h2>
+    <div><span class="chip">CUI ${esc(cui || '—')}</span><span class="chip">${esc(i.tipo_inversion)}</span><span class="chip">${esc(NIVELES[i.nivel] || i.nivel)}</span>
+      <span class="chip">${esc(i.situacion)}</span>${i.registrado_pmi === 'SI' ? '<span class="chip">En PMI</span>' : ''}</div>
+    <div class="caja"><h2>Presupuesto y ejecución ${esc(anio)}</h2><div class="pares">
+      ${par('PIA', soles(i.pia_anio_actual))}${par('PIM', soles(i.pim_anio_actual))}${par('Certificado', soles(i.certif_anio_actual))}
+      ${par('Compromiso anual', soles(i.comprom_anual_anio_actual))}${par('Devengado', soles(i.dev_anio_actual))}${par('Avance sobre el PIM', pct(i.dev_anio_actual, i.pim_anio_actual))}</div></div>
+    <div class="caja"><h2>Costos y avance acumulado</h2><div class="pares">
+      ${par('Monto viable o aprobado', soles(i.monto_viable))}${par('Costo actualizado', soles(i.costo_actualizado))}
+      ${par('Devengado al año anterior', soles(i.deven_acumul_anio_ant))}${par('Saldo por ejecutar', soles(i.saldo_ejecutar))}
+      ${par('Avance físico', i.avance_fisico == null ? '—' : i.avance_fisico + ' %')}${par('Avance de ejecución', i.avance_ejecucion == null ? '—' : i.avance_ejecucion + ' %')}
+      ${par('Primer devengado', i.primer_devengado)}${par('Último devengado', i.ultimo_devengado)}</div></div>
+    <div class="caja"><h2>Programación multianual (PMI)</h2><div class="pares">
+      ${[1,2,3,4].map(n => par(a ? 'Año ' + (a + n - 1) : 'Año ' + n, soles(i['pmi_anio_' + n]))).join('')}</div></div>`;
+  if (f) {
+    const v = meses.map(m => f['dev_' + m + '_ano_vig'] || 0), max = Math.max(1, ...v);
+    h += `<div class="caja"><h2>Formato 12-B · devengado mensual ${esc(anio)}</h2>
+      <div class="meses">${v.map(x => `<div style="height:${x / max * 100}%"></div>`).join('')}</div>
+      <div class="meses-n">${meses.map(m => `<span>${m}</span>`).join('')}</div>
+      <div class="pares" style="margin-top:10px">${par('Última actualización', String(f.fecha_ult_act_f12b || '').slice(0, 10))}${par('Último periodo', f.ult_periodo_reg_f12b)}</div>
+      ${f.ult_estado_situacional ? `<h2 style="margin-top:12px">Estado situacional</h2><div class="nota">${esc(f.ult_estado_situacional)}</div>` : ''}
+      ${f.ult_problema ? `<h2 style="margin-top:12px">Problema</h2><div class="nota">${esc(f.ult_problema)}</div>` : ''}
+      ${f.acc_problema ? `<h2 style="margin-top:12px">Acción</h2><div class="nota">${esc(f.acc_problema)}</div>` : ''}</div>`;
+  }
+  const ej = EJEC.filas[cui];
+  if (ej) h += `<div class="caja"><h2>Ejecución por unidad ejecutora y fuente ${esc(anio)}</h2>${ej.map(e => `<div class="ejec">
+      <div style="font-size:13.5px">${esc(e[0])}</div><div class="meta nota">${esc(e[2])} · ${esc(e[3])}</div>
+      <div class="cifras" style="display:flex;justify-content:space-between;font-size:13px;margin-top:4px"><span>PIM <b>${corto(e[5])}</b></span><span>Dev. <b>${corto(e[6])}</b></span><span><b>${pct(e[6], e[5])}</b></span></div></div>`).join('')}</div>`;
+  h += `<div class="caja"><h2>Responsables y ubicación</h2><div class="pares">
+      ${par('Entidad', i.entidad, 1)}${par('OPMI', i.nombre_opmi, 1)}${par('Unidad Formuladora', i.nombre_uf, 1)}${par('Unidad Ejecutora de Inversiones', i.nombre_uei, 1)}
+      ${par('Unidad ejecutora presupuestal', i.nombre_uep, 1)}${par('Ubicación', [i.departamento, i.provincia, i.distrito].filter(Boolean).join(' / '), 1)}${par('Beneficiarios', i.num_habitantes_benef)}</div></div>
+    <div class="caja"><h2>Fase de ejecución</h2><div class="pares">
+      ${par('Modalidad', i.des_modalidad, 1)}${par('Etapa (Formato 8)', i.etapa_f8, 1)}${par('Etapa de cierre (Formato 9)', i.etapa_f9, 1)}
+      ${par('Expediente técnico', i.expediente_tecnico)}${par('Viabilidad o aprobación', i.fecha_viabilidad)}
+      ${par('Inicio de ejecución', i.fec_ini_ejecucion)}${par('Fin de ejecución', i.fec_fin_ejecucion)}
+      ${par('Inicio ejecución física', i.fec_ini_ejec_fisica)}${par('Fin ejecución física', i.fec_fin_ejec_fisica)}</div></div>`;
+  if (cui) h += `<div class="caja"><h2>Ver en las plataformas del MEF</h2>
+      <a target="_blank" rel="noopener" href="https://ofi5.mef.gob.pe/ssi/Ssi/Index?codigo=${encodeURIComponent(cui)}&tipo=2">Sistema de Seguimiento de Inversiones (SSI)</a><br><br>
+      <a target="_blank" rel="noopener" href="https://ofi5.mef.gob.pe/invierte/pmi/consultapmi?cui=${encodeURIComponent(cui)}">Consulta de cartera PMI</a></div>`;
+  $('ficha').innerHTML = h; $('ficha').hidden = false; $('ficha').scrollTop = 0; document.body.style.overflow = 'hidden';
+  history.pushState({ficha: 1}, '');
+  $('volver').onclick = () => history.back();
+}
+function cerrarFicha() { $('ficha').hidden = true; document.body.style.overflow = ''; }
+window.addEventListener('popstate', cerrarFicha);
+
+/* ---------- Navegación e inicio ---------- */
+function llenar(id, lista, nombre) { const s = $(id); s.length = 1; for (const x of lista) s.add(new Option(nombre ? nombre(x) : x, x)); }
+function verTab(nombre) {
+  tab = nombre;
+  for (const b of document.querySelectorAll('nav button')) b.classList.toggle('activa', b.dataset.tab === nombre);
+  for (const s of ['panel', 'lista', 'ideas']) $(s).hidden = s !== nombre;
+  window.scrollTo(0, 0);
+  if (nombre === 'ideas') cargarIdeas().catch(e => { $('icargando').textContent = 'No se pudieron cargar las ideas. Revise su conexión.'; });
+}
+async function iniciar() {
+  const [meta, inv] = await Promise.all([traer('meta.json'), traer('inversiones.json')]);
+  META = meta; anio = meta.anio || ''; INV = objetos(inv);
+  for (const r of INV) { r._n = plano(r.nombre_inversion); r.clave = String(r.clave); porClave.set(r.clave, r); if (r.codigo_unico) cuis.add(String(r.codigo_unico)); }
+  const lista = c => [...new Set(INV.map(r => r[c]).filter(Boolean))].sort();
+  llenar('nivel', lista('nivel'), x => NIVELES[x] || x); llenar('depto', lista('departamento'));
+  llenar('tipo', lista('tipo_inversion')); llenar('entidad', lista('entidad'));
+  llenar('alerta', Object.keys(ALERTAS), tituloAlerta);
+  $('estado').textContent = `${num(INV.length)} inversiones activas · datos al ${meta.actualizado || ''}${navigator.onLine ? '' : ' · sin conexión'}`;
+  $('cargando').hidden = true; $('panel').hidden = false;
+  refrescar();
+}
+let espera;
+$('q').addEventListener('input', () => { clearTimeout(espera); espera = setTimeout(refrescar, 300); });
+for (const id of ['nivel', 'depto', 'tipo', 'entidad', 'alerta', 'pim', 'pmi', 'orden']) $(id).addEventListener('change', refrescar);
+$('btnFiltros').onclick = () => { $('hoja').hidden = !$('hoja').hidden; };
+$('btnLimpiar').onclick = limpiar;
+$('mas').onclick = () => pintarLista(false);
+let iespera;
+$('iq').addEventListener('input', () => { clearTimeout(iespera); iespera = setTimeout(refrescarIdeas, 300); });
+for (const id of ['inivel', 'idepto', 'itipo', 'iestado', 'ianio', 'icui', 'iorden']) $(id).addEventListener('change', refrescarIdeas);
+$('ibtnFiltros').onclick = () => { $('ihoja').hidden = !$('ihoja').hidden; };
+$('ibtnLimpiar').onclick = () => { for (const id of ['iq', 'inivel', 'idepto', 'itipo', 'iestado', 'ianio', 'icui']) $(id).value = ''; refrescarIdeas(); };
+$('imas').onclick = pintarIdeas;
+document.querySelector('nav').addEventListener('click', e => { const b = e.target.closest('[data-tab]'); if (b) verTab(b.dataset.tab); });
+$('panel').addEventListener('click', e => {
+  if (e.target.id === 'quitar') { e.preventDefault(); limpiar(); return; }
+  const al = e.target.closest('[data-alerta]'), b = e.target.closest('[data-filtro]');
+  if (al) $('alerta').value = al.dataset.alerta;
+  else if (b) { $(b.dataset.filtro).value = b.dataset.valor; $('pim').checked = true; }
+  else return;
+  refrescar(); verTab('lista');
+});
+$('tarjetas').addEventListener('click', e => { const t = e.target.closest('[data-clave]'); if (t) abrirFicha(t.dataset.clave); });
+$('itarjetas').addEventListener('click', e => { const a = e.target.closest('a[data-clave]'); if (a) { e.preventDefault(); abrirFicha(a.dataset.clave); } });
+if ('serviceWorker' in navigator) navigator.serviceWorker.register('sw.js').catch(() => {});
+iniciar().catch(e => { $('cargando').hidden = true; aviso('No se pudo cargar la información. Revise su conexión e intente de nuevo. (' + e.message + ')'); });
+</script>
+</body>
+</html>

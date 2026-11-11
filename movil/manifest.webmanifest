@@ -1,0 +1,17 @@
+{
+  "name": "Seguimiento de inversiones - Salud",
+  "short_name": "Inversiones",
+  "description": "Seguimiento de la ejecución de inversiones públicas de la función Salud con datos del MEF.",
+  "lang": "es",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#f4f5f2",
+  "theme_color": "#0f6b5c",
+  "icons": [
+    { "src": "icono-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "icono-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    { "src": "icono-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ]
+}

@@ -1,0 +1,58 @@
+name: Actualizar datos y publicar la app
+
+on:
+  schedule:
+    # Todos los dias a las 19:30 hora de Lima (00:30 UTC); el MEF publica sus archivos por la tarde
+    - cron: "30 0 * * *"
+  workflow_dispatch:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  datos:
+    name: Descargar datos del MEF
+    # Windows: su curl valida los certificados del servidor del MEF (ver datos.py)
+    runs-on: windows-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+      - name: Descargar y procesar
+        run: python datos.py
+      - name: Generar archivos para el celular
+        run: python exportar_movil.py
+      - uses: actions/upload-artifact@v4
+        with:
+          name: sitio
+          path: movil
+          retention-days: 3
+
+  publicar:
+    name: Publicar en GitHub Pages
+    needs: datos
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.despliegue.outputs.page_url }}
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          name: sitio
+          path: sitio
+      - uses: actions/configure-pages@v5
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: sitio
+      - id: despliegue
+        uses: actions/deploy-pages@v4

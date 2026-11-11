@@ -1,0 +1,7 @@
+# Datos descargados (se regeneran) y archivos locales
+data/
+movil/datos/
+para_github/
+__pycache__/
+*.exe
+.claude/
