@@ -153,6 +153,7 @@ a{color:var(--acento)}
     </div>
     <div id="icargando" class="centro">Cargando las ideas…</div>
     <div id="icuerpo" hidden>
+      <div class="nota" id="ifecha" style="margin-bottom:8px"></div>
       <div class="kpis" id="ikpis"></div>
       <div class="conteo"><span id="iconteo"></span>
         <select id="iorden" aria-label="Ordenar"><option value="monto">Mayor monto</option>
@@ -286,7 +287,10 @@ function limpiar() {
 /* ---------- Ideas ---------- */
 async function cargarIdeas() {
   if (IDEAS) return;
-  IDEAS = objetos(await traer('ideas.json'));
+  const crudo = await traer('ideas.json');
+  IDEAS = objetos(crudo);
+  if (!IDEAS.length) { $('icargando').textContent = 'Las ideas de inversión aún no están disponibles en la app del celular.'; return; }
+  $('ifecha').textContent = crudo.actualizado ? 'Ideas al ' + crudo.actualizado + ' (se actualizan desde la computadora)' : '';
   for (const r of IDEAS) { r._n = plano(r.nombre); r._cartera = !!r.cod_unico && cuis.has(String(r.cod_unico)); }
   const lista = c => [...new Set(IDEAS.map(r => r[c]).filter(v => v && v !== '0'))].sort();
   llenar('inivel', lista('nivel'), x => NIVELES[x] || x); llenar('itipo', lista('tipo'));

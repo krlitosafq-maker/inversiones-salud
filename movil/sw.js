@@ -1,6 +1,6 @@
 // Guarda la app y los datos en el celular para que abra sin conexion.
 // Estrategia: primero la red (para tener lo mas reciente); si no hay red, la copia guardada.
-const CACHE = 'inversiones-v1';
+const CACHE = 'inversiones-v2';
 const BASE = ['./', 'index.html', 'manifest.webmanifest', 'icono-192.png', 'icono-512.png'];
 
 self.addEventListener('install', e => {

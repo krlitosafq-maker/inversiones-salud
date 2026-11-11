@@ -79,11 +79,19 @@ def exportar():
 
         hay_ideas = con.execute(
             "SELECT 1 FROM sqlite_master WHERE type='table' AND name='ideas'").fetchone()
-        ideas = _tabla(con, "ideas", IDEAS, "ORDER BY monto_inversion DESC") if hay_ideas \
-            else {"cols": IDEAS, "filas": []}
-        pesos["ideas.json"] = _guardar("ideas.json", ideas)
-
         meta = {f["k"]: f["v"] for f in con.execute("SELECT k, v FROM meta")}
+        ruta_ideas = os.path.join(DESTINO, "ideas.json")
+        if hay_ideas:
+            ideas = _tabla(con, "ideas", IDEAS, "ORDER BY monto_inversion DESC")
+            ideas["actualizado"] = meta.get("ideas_actualizado", "")
+            pesos["ideas.json"] = _guardar("ideas.json", ideas)
+        elif os.path.exists(ruta_ideas):
+            # La consulta de ideas del MEF no responde desde fuera del Peru (caso de GitHub):
+            # se conserva la ultima copia de ideas subida desde la computadora.
+            pesos["ideas.json (copia anterior)"] = os.path.getsize(ruta_ideas)
+        else:
+            pesos["ideas.json"] = _guardar("ideas.json", {"cols": IDEAS, "filas": [], "actualizado": ""})
+
         _guardar("meta.json", meta)
         return pesos
     finally:
